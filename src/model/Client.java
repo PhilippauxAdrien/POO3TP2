@@ -1,5 +1,10 @@
 package model;
 
+/**
+ * Cette classe représent un client comme présent dans la BDD
+ * @author adrie
+ *
+ */
 public class Client {
 	
 	private Integer numClient;
@@ -9,10 +14,6 @@ public class Client {
 	private Double revenu;
 	private String telephone;
 	private Integer nivRisque;
-	
-	public Client(){
-		
-	}
 	
 	public Client(Integer numClient, String nom, String prenom, Integer numSecu, String telephone, Double revenu, Integer nivRisque) {
 		super();
@@ -72,8 +73,7 @@ public class Client {
 
 	@Override
 	public String toString() {
-		return "Client [numClient=" + numClient + ", nom=" + nom + ", prenom=" + prenom + ", numSecu=" + numSecu
-				+ ", revenu=" + revenu + ", telephone=" + telephone + ", nivRisque=" + nivRisque + "]";
+		return numClient + ", " + nom + ", " + prenom;
 	}
 	
 }
