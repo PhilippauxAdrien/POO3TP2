@@ -103,7 +103,8 @@ public class GestionClient extends JFrame implements WindowListener, MouseListen
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		getBh().getBmodifier().setEnabled(true);
-		
+		getBh().getSupprimer().setEnabled(true);
+
 		for(Client c : ir.getMesClients()){
 			if(liste.getSelectedValue().equals(c.getNom() + " " + c.getPrenom())){
 				client = c;

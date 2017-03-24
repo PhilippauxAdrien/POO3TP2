@@ -27,7 +27,10 @@ public class InsuranceRequest {
 	private List<Client> mesClients = new ArrayList<>();
 	public static final String REQUEST_SELECT_CLIENTS = "SELECT * from CLIENT WHERE UPPER(nom) LIKE ? OR UPPER(prenom) LIKE ?";
 	public static final String REQUEST_UPDATE_CLIENT = "UPDATE CLIENT c SET c.nom=?, c.prenom=?, c.telephone=?, c.revenu=? WHERE c.nClient=?";
-
+	public static final String REQUEST_NB_CLIENTS = "select * from client order by nClient desc";
+	public static final String REQUEST_ADD_CLIENT = "INSERT into CLIENT(nom, prenom, nNumSecu, telephone, revenu, nrisque) values(?,?,?,?,?,?)";
+	public static final String REQUEST_ADD_NUMSECU = "INSERT into NUMSECU(sexe, anneeNaissance, moisNaissance, departement, commune, ordre, cle) values(?, ?, ?, ?, ?, ?, ?)";
+	public static final String REQUEST_DELETE_CLIENT = "DELETE from client where nClient= ? ";
 	/**
 	 * Méthode de connexion à la base de donnée mysql
 	 */
@@ -67,6 +70,21 @@ public class InsuranceRequest {
 		return mesClients;
 	}
 
+	 /** Récupère le nb de client en base
+	 */
+	public int getNbClients() throws SQLException {
+		int nb;
+		
+		preparedStatement = connect.prepareStatement(REQUEST_NB_CLIENTS);
+		resultSet = preparedStatement.executeQuery();
+		resultSet.next();
+		
+		nb = resultSet.getInt("nClient");
+		
+		return nb;
+		
+	}
+	 
 	/**
 	 * Mets à jour un client dans la table Client
 	 * @param c
@@ -82,7 +100,52 @@ public class InsuranceRequest {
 
 		preparedStatement.executeUpdate();
 	}
+	
+	/**
+	 * Ajout un client dans la table Client
+	 * @throws SQLException
+	 */
+	public void addClient(Client c) throws SQLException {
+		preparedStatement = connect.prepareStatement(REQUEST_ADD_CLIENT);
+		preparedStatement.setString(1, c.getNom());
+		preparedStatement.setString(2, c.getPrenom());
+		preparedStatement.setInt(3, c.getNumSecu());
+		preparedStatement.setString(4, c.getTelephone());
+		preparedStatement.setBigDecimal(5, new BigDecimal(c.getRevenu()));
+		preparedStatement.setInt(6, c.getNivRisque());
 
+		preparedStatement.executeUpdate();
+	}
+	
+	/**
+	 * Ajoute un numsecu dans la table numsecu
+	 * @throws SQLException
+	 */
+	public void addNumsecu(int sexe, int annee, int mois, int dep, int comm, int ordre, int cle) throws SQLException {
+		preparedStatement = connect.prepareStatement(REQUEST_ADD_NUMSECU);
+		preparedStatement.setInt(1, sexe);
+		preparedStatement.setInt(2, annee);
+		preparedStatement.setInt(3, mois);
+		preparedStatement.setInt(4, dep);
+		preparedStatement.setInt(5, comm);
+		preparedStatement.setInt(6, ordre);
+		preparedStatement.setInt(7, cle);
+
+		preparedStatement.executeUpdate();
+	}
+
+	/**
+	 * Supprime un client de la table Client
+	 * @param c
+	 * @throws SQLException
+	 */
+	public void deleteClient(Client c) throws SQLException {
+		preparedStatement = connect.prepareStatement(REQUEST_DELETE_CLIENT);
+	
+		preparedStatement.setInt(1, c.getNumClient());
+
+		preparedStatement.executeUpdate();
+	}
 	public List<Client> getMesClients() {
 		return mesClients;
 	}
