@@ -174,7 +174,6 @@ public class AjoutClient extends JDialog implements ActionListener, WindowListen
 	@Override
 	public void windowClosing(WindowEvent arg0) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override

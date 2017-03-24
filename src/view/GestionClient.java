@@ -144,7 +144,5 @@ public class GestionClient extends JFrame implements WindowListener, MouseListen
 	public void setIr(InsuranceRequest ir) {
 		this.ir = ir;
 	}
-
-
 	
 }

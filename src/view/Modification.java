@@ -163,4 +163,5 @@ public class Modification extends JDialog implements ActionListener, WindowListe
 	@Override
 	public void keyTyped(KeyEvent e) {
 	}
+	
 }

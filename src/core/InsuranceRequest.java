@@ -31,6 +31,7 @@ public class InsuranceRequest {
 	public static final String REQUEST_ADD_CLIENT = "INSERT into CLIENT(nom, prenom, nNumSecu, telephone, revenu, nrisque) values(?,?,?,?,?,?)";
 	public static final String REQUEST_ADD_NUMSECU = "INSERT into NUMSECU(sexe, anneeNaissance, moisNaissance, departement, commune, ordre, cle) values(?, ?, ?, ?, ?, ?, ?)";
 	public static final String REQUEST_DELETE_CLIENT = "DELETE from client where nClient= ? ";
+	
 	/**
 	 * Méthode de connexion à la base de donnée mysql
 	 */

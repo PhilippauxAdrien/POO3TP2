@@ -127,6 +127,7 @@ public class BarreHaute extends JPanel implements ActionListener {
 			AjoutClient ac;
 			try {
 				myGC.getIr().deleteClient(myGC.getClient());
+				
 				/**
 				 * On refresh les clients de la liste
 				 */
