@@ -11,10 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.Client;
+import model.Produit;
+import model.TableModelResultSet;
 
 /**
- * Cette classe contient toutes les requetes nécessaires pour la gestion de ce TP2.
- * Exemples : maj Client, liste des clients, suppression client, ...
+ * Cette classe contient toutes les requetes nécessaires pour la gestion de ce
+ * TP2. Exemples : maj Client, liste des clients, suppression client, ...
+ * 
  * @author adrie
  *
  */
@@ -31,7 +34,11 @@ public class InsuranceRequest {
 	public static final String REQUEST_ADD_CLIENT = "INSERT into CLIENT(nom, prenom, nNumSecu, telephone, revenu, nrisque) values(?,?,?,?,?,?)";
 	public static final String REQUEST_ADD_NUMSECU = "INSERT into NUMSECU(sexe, anneeNaissance, moisNaissance, departement, commune, ordre, cle) values(?, ?, ?, ?, ?, ?, ?)";
 	public static final String REQUEST_DELETE_CLIENT = "DELETE from client where nClient= ? ";
-	
+	public static final String REQUEST_DELETE_NUMSECU = "DELETE from numsecu where nNumSecu= ? ";
+	public static final String REQUEST_SELECT_CONTRAT = "Select p.nom AS NOMP, c.numero, c.dateDebut, c.dateEcheance, p.nProduit as NProd, p.tauxRevenu as txRevenu, p.effortBudgetaire as efbud, c.nContrat, c.nProduit as NPoduitc FROM contrat c INNER JOIN produit p on p.nProduit = c.nProduit WHERE c.nClient = ?";
+	public static final String REQUEST_SELECT_PRODUIT = "SELECT * from produit";
+	public static final String REQUEST_SELECT_BY_CLIENTS_BY_PRODUIT = "SELECT c.nProduit , c.nClient, cl.nClient, cl.nom, cl.prenom, cl.nNumSecu, cl.telephone, cl.revenu, cl.nRisque FROM contrat c INNER JOIN client cl on c.nClient = cl.nClient WHERE c.nProduit = ?";
+
 	/**
 	 * Méthode de connexion à la base de donnée mysql
 	 */
@@ -48,8 +55,12 @@ public class InsuranceRequest {
 	}
 
 	/**
-	 * Effectue un sélect sur la table Client pour récupérer tous les clients de celle-ci
-	 * @param pattern - Chaine de caractère pour filtrer les clients (doit être présente dans le nom ou prénom)
+	 * Effectue un sélect sur la table Client pour récupérer tous les clients de
+	 * celle-ci
+	 * 
+	 * @param pattern
+	 *            - Chaine de caractère pour filtrer les clients (doit être
+	 *            présente dans le nom ou prénom)
 	 * @return Une liste de client correspondant à la requete effectuée.
 	 * @throws SQLException
 	 */
@@ -71,23 +82,25 @@ public class InsuranceRequest {
 		return mesClients;
 	}
 
-	 /** Récupère le nb de client en base
+	/**
+	 * Récupère le nb de client en base
 	 */
 	public int getNbClients() throws SQLException {
 		int nb;
-		
+
 		preparedStatement = connect.prepareStatement(REQUEST_NB_CLIENTS);
 		resultSet = preparedStatement.executeQuery();
 		resultSet.next();
-		
+
 		nb = resultSet.getInt("nClient");
-		
+
 		return nb;
-		
+
 	}
-	 
+
 	/**
 	 * Mets à jour un client dans la table Client
+	 * 
 	 * @param c
 	 * @throws SQLException
 	 */
@@ -101,9 +114,10 @@ public class InsuranceRequest {
 
 		preparedStatement.executeUpdate();
 	}
-	
+
 	/**
 	 * Ajout un client dans la table Client
+	 * 
 	 * @throws SQLException
 	 */
 	public void addClient(Client c) throws SQLException {
@@ -117,9 +131,10 @@ public class InsuranceRequest {
 
 		preparedStatement.executeUpdate();
 	}
-	
+
 	/**
 	 * Ajoute un numsecu dans la table numsecu
+	 * 
 	 * @throws SQLException
 	 */
 	public void addNumsecu(int sexe, int annee, int mois, int dep, int comm, int ordre, int cle) throws SQLException {
@@ -137,16 +152,73 @@ public class InsuranceRequest {
 
 	/**
 	 * Supprime un client de la table Client
+	 * 
 	 * @param c
 	 * @throws SQLException
 	 */
 	public void deleteClient(Client c) throws SQLException {
 		preparedStatement = connect.prepareStatement(REQUEST_DELETE_CLIENT);
-	
+
 		preparedStatement.setInt(1, c.getNumClient());
 
 		preparedStatement.executeUpdate();
+
+		preparedStatement = connect.prepareStatement(REQUEST_DELETE_NUMSECU);
+
+		preparedStatement.setInt(1, c.getNumSecu());
+		preparedStatement.executeUpdate();
+
 	}
+
+	public List<Produit> ensProduit() throws SQLException {
+		
+		List<Produit> prod = new ArrayList<Produit>();
+		
+		preparedStatement = connect.prepareStatement(REQUEST_SELECT_PRODUIT);
+		resultSet = preparedStatement.executeQuery();
+		
+		while(resultSet.next()){
+			Produit p = new Produit(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3),  resultSet.getDouble(4),  resultSet.getDouble(5));
+			prod.add(p);
+		}
+		
+		return prod;
+	}
+	
+	public List<Client> getClientsByProduit(Produit p) throws SQLException {
+		
+		List<Client> clients = new ArrayList<Client>();
+		
+		preparedStatement = connect.prepareStatement(REQUEST_SELECT_BY_CLIENTS_BY_PRODUIT);
+		preparedStatement.setInt(1, p.getnProduit());
+		resultSet = preparedStatement.executeQuery();
+		
+		while(resultSet.next()){
+			Client c = new Client(resultSet.getInt(2), resultSet.getString(4), resultSet.getString(5), resultSet.getInt(6), resultSet.getString(7), resultSet.getDouble(8), resultSet.getInt(9));
+			clients.add(c);
+		}
+		
+		return clients;
+	}
+	
+	/**
+	 * Récupère les différents contrats d'un client
+	 * @param c - Client c 
+	 * @return un modèle pouvant être utilisé dans une JTable
+	 * @throws SQLException
+	 */
+	public TableModelResultSet ensContrat(Client c) throws SQLException {
+		TableModelResultSet t;
+		
+		preparedStatement = connect.prepareStatement(REQUEST_SELECT_CONTRAT);
+		preparedStatement.setInt(1, c.getNumClient());
+
+		resultSet = preparedStatement.executeQuery();
+		t = new TableModelResultSet(resultSet);
+		
+		return t;
+	}
+
 	public List<Client> getMesClients() {
 		return mesClients;
 	}
@@ -156,7 +228,8 @@ public class InsuranceRequest {
 	}
 
 	/**
-	 * Méthode de fermeture de la connexion à la base de donnée et des objets utilisés
+	 * Méthode de fermeture de la connexion à la base de donnée et des objets
+	 * utilisés
 	 */
 	public void close() {
 		try {

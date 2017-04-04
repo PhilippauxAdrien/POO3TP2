@@ -13,6 +13,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import model.Client;
@@ -108,7 +109,10 @@ public class Modification extends JDialog implements ActionListener, WindowListe
 				dlm.addElement(ccurr.getNom() + " " + ccurr.getPrenom());
 			}
 			myGC.getListe().setModel(dlm);
+			JOptionPane.showMessageDialog(this,"Client modifié");
+
 		} catch (SQLException e1) {
+			JOptionPane.showMessageDialog(this,"Problème modification du client");
 			e1.printStackTrace();
 		}
 		

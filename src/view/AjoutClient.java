@@ -18,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
@@ -207,7 +208,7 @@ public class AjoutClient extends JDialog implements ActionListener, WindowListen
 		Date d = (Date) datePicker.getModel().getValue();
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(d);
-		int year = calendar.get(Calendar.YEAR);
+		int year = (calendar.get(Calendar.YEAR))%100;
 		int month = calendar.get(Calendar.MONTH) + 1;
 		int sexe = listsexe.getSelectedItem().toString().equals("Homme") ? 1 : 2;
 		int dep = Integer.parseInt(tfCodePostal.getText().substring(0,2));
@@ -234,9 +235,11 @@ public class AjoutClient extends JDialog implements ActionListener, WindowListen
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
-			
+			JOptionPane.showMessageDialog(this,"Client ajouté");
+
 			this.dispose();
 		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this,"Problème ajout client");
 			e.printStackTrace();
 		}
 		

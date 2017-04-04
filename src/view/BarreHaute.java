@@ -9,11 +9,13 @@ import java.sql.SQLException;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import model.Client;
+import model.TableModelResultSet;
 
 
 @SuppressWarnings("serial")
@@ -22,6 +24,8 @@ public class BarreHaute extends JPanel implements ActionListener {
 	private JButton bmodifier;
 	private JButton bajouter;
 	private JButton supprimer;
+	private JButton voirContrat;
+	private JButton voirTree;
 
 	private GestionClient myGC;
 	private JTextField recherche;
@@ -34,13 +38,18 @@ public class BarreHaute extends JPanel implements ActionListener {
 		this.bmodifier = new JButton("Modifier");
 		this.bajouter = new JButton("Ajouter un client");
 		this.supprimer = new JButton("Supprimer le client");
+		this.voirContrat = new JButton("Voir contrats client");
+		this.voirTree = new JButton("Voir arbre");
 
 		bmodifier.addActionListener(this);
 		bmodifier.setEnabled(false);
+		voirContrat.addActionListener(this);
+		voirContrat.setEnabled(false);
 		supprimer.addActionListener(this);
 		supprimer.setEnabled(false);
 		bajouter.addActionListener(this);
 		bajouter.setEnabled(true);
+		voirTree.addActionListener(this);
 		
 		recherche = new JTextField(10);
 		recherche.addKeyListener(new KeyListener() {
@@ -68,7 +77,9 @@ public class BarreHaute extends JPanel implements ActionListener {
 		this.add(this.zoneAffichage);
 		this.add(this.bmodifier);
 		this.add(bajouter);
+		this.add(voirContrat);
 		this.add(supprimer);
+		this.add(voirTree);
 
 	}
 
@@ -127,7 +138,8 @@ public class BarreHaute extends JPanel implements ActionListener {
 			AjoutClient ac;
 			try {
 				myGC.getIr().deleteClient(myGC.getClient());
-				
+				JOptionPane.showMessageDialog(this,"Client supprimé");
+
 				/**
 				 * On refresh les clients de la liste
 				 */
@@ -144,8 +156,28 @@ public class BarreHaute extends JPanel implements ActionListener {
 				}
 				
 			} catch (SQLException e1) {
+				JOptionPane.showMessageDialog(this,"Problème suppression client");
 				e1.printStackTrace();
 			}
+		}
+		else if(e.getSource().equals(voirContrat)){
+			AfficheContrat ac;
+			TableModelResultSet t = null;
+			try {
+				t = myGC.getIr().ensContrat(myGC.getClient());
+				ac = new AfficheContrat(t);
+				ac.setVisible(true);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+		else if(e.getSource().equals(voirTree)){
+			try {
+				AfficheTree at = new AfficheTree(myGC);
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			
 		}
 	}
 
@@ -163,6 +195,14 @@ public class BarreHaute extends JPanel implements ActionListener {
 
 	public void setSupprimer(JButton supprimer) {
 		this.supprimer = supprimer;
+	}
+
+	public JButton getVoirContrat() {
+		return voirContrat;
+	}
+
+	public void setVoirContrat(JButton voirContrat) {
+		this.voirContrat = voirContrat;
 	}
 
 }
